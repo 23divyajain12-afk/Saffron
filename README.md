@@ -1,6 +1,6 @@
 # Saffron Pantry Manager
 
-A small Python pantry management and recipe suggestion app for Indian kitchens.
+A small Python pantry management and recipe suggestion app for household kitchens.
 
 ## What it does
 - manages pantry items with expiry dates
