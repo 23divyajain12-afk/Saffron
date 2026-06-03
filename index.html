@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saffron — Premium Indian Pantry Manager</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --bg-card: rgba(20, 22, 32, 0.65);
+            --bg-card-hover: rgba(30, 33, 48, 0.8);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-glass-glow: rgba(255, 128, 8, 0.25);
+            
+            --primary: #ff8008;
+            --primary-gradient: linear-gradient(135deg, #ff8008 0%, #ffc837 100%);
+            --secondary: #10b981;
+            --secondary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-accent: #ff9933;
+            
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            
+            --shadow-glow: 0 8px 32px 0 rgba(255, 128, 8, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 128, 8, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: rgba(10, 11, 16, 0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 128, 8, 0.3);
+        }
+
+        .brand-name {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: var(--primary-gradient);
+            border-color: transparent;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .nav-item i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-footer {
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-glass);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .api-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.75rem;
+            align-self: flex-start;
+        }
+
+        .api-badge.missing {
+            background: rgba(239, 68, 110, 0.1);
+            color: var(--danger);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 2.5rem 3rem;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-title h1 {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-glass-glow);
+            background: var(--bg-card-hover);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .stat-info h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Tab Contents */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Pantry Grid / View Styling */
+        .pantry-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 450px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255, 128, 8, 0.15);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 18px;
+            height: 18px;
+        }
+
+        .pantry-filters {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+        }
+
+        /* Pantry Grid Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border-glass);
+            background: rgba(10, 11, 16, 0.4);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .item-name-cell {
+            font-weight: 600;
+            color: #fff;
+            text-transform: capitalize;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .expiry-badge {
+            display: inline-flex;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        .expiry-badge.expiring-soon {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            animation: pulse-glow 2s infinite;
+        }
+
+        .expiry-badge.expired {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.3); }
+            70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+
+        .qty-badge {
+            font-weight: 700;
+            color: var(--text-accent);
+        }
+
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-icon-btn:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Two Column Forms / Content */
+        .two-col-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .two-col-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Controls */
+        .form-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Button Styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 128, 8, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(255, 128, 8, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* AI Upload Area */
+        .upload-card {
+            border: 2px dashed var(--border-glass);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.01);
+            transition: all 0.3s;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem;
+        }
+
+        .upload-card:hover, .upload-card.dragover {
+            border-color: var(--primary);
+            background: rgba(255, 128, 8, 0.03);
+        }
+
+        .upload-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: rgba(255, 128, 8, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .upload-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .upload-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 320px;
+        }
+
+        .upload-hidden {
+            display: none;
+        }
+
+        /* Confirmed Items Table for AI parser */
+        .review-panel {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .review-panel.active {
+            display: block;
+        }
+
+        /* Recipe Grid & Details */
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .recipe-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .recipe-card:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+        }
+
+        .recipe-card:hover::before, .recipe-card.active::before {
+            opacity: 1;
+        }
+
+        .recipe-card.active {
+            border-color: var(--primary);
+            background: rgba(255, 128, 8, 0.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .recipe-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .recipe-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .recipe-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Recipe Progress Bar */
+        .ingredient-status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .ing-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ing-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .ing-name {
+            text-transform: capitalize;
+            color: var(--text-main);
+        }
+
+        .ing-stock {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .ing-stock.enough {
+            color: var(--secondary);
+        }
+
+        .ing-stock.missing {
+            color: var(--danger);
+        }
+
+        .ing-progress-bg {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .ing-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            background: var(--secondary-gradient);
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        .ing-progress-bar.missing {
+            background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: rgba(16, 22, 32, 0.9);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #fff;
+            font-weight: 500;
+            transform: translateX(120%);
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            min-width: 320px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        @keyframes slideIn {
+            to { transform: translateX(0); }
+        }
+
+        .toast-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-icon.success { color: var(--secondary); }
+        .toast-icon.error { color: var(--danger); }
+        .toast-icon.warning { color: var(--warning); }
+
+        /* Loader Overlay during API Scanning */
+        .scan-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 3rem 1rem;
+        }
+
+        .scan-loader.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 128, 8, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse-text {
+            animation: textPulse 1.5s ease-in-out infinite alternate;
+            font-weight: 500;
+            color: var(--text-accent);
+        }
+
+        @keyframes textPulse {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <a href="#" class="brand">
+            <div class="brand-logo">
+                <i data-lucide="flame"></i>
+            </div>
+            <span class="brand-name">SAFFRON</span>
+        </a>
+        
+        <nav class="nav-menu">
+            <div class="nav-item active" data-tab="dashboard">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Overview</span>
+            </div>
+            <div class="nav-item" data-tab="pantry" id="nav-pantry-tab">
+                <i data-lucide="package"></i>
+                <span>Pantry Inventory</span>
+            </div>
+            <div class="nav-item" data-tab="scanner">
+                <i data-lucide="scan-line"></i>
+                <span>Receipt Scanner</span>
+            </div>
+            <div class="nav-item" data-tab="recipes">
+                <i data-lucide="chef-hat"></i>
+                <span>Recipe Mentor</span>
+            </div>
+        </nav>
+        
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-content">
+        
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <h1 id="page-title">Welcome back, Chef</h1>
+                <p id="page-subtitle">Here is the visual overview of your Indian kitchen pantry stock.</p>
+            </div>
+            <div class="user-status">
+                <div class="api-badge" id="pantry-total-count">
+                    <i data-lucide="layers"></i>
+                    <span>0 items</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- TAB: DASHBOARD -->
+        <!-- ------------------------------------------------------------- -->
+        <section class="tab-content active" id="tab-dashboard">
+            <!-- Stats Row -->
+            <div class="stats-grid">
+                <div class="glass-card stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="package-open"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Stock Batches</h3>
+                        <p id="stat-total-batches">0</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-icon" style="color: var(--warning);">
+                        <i data-lucide="alarm-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Expiring (3 Days)</h3>
+                        <p id="stat-expiring-soon" style="color: var(--warning);">0</p>
+                    </div>
+                </div>
+                <div class="glass-card stat-card">
+                    <div class="stat-icon" style="color: var(--secondary);">
+                        <i data-lucide="utensils"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Recipes Ready</h3>
+                        <p id="stat-recipes-ready" style="color: var(--secondary);">0 / 4</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Split View -->
+            <div class="two-col-layout">
+                <!-- Expiring Soon Subpanel -->
+                <div class="glass-card">
+                    <div class="form-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Freshness & Expiring Alert</span>
+                        <i data-lucide="info" style="width:18px; color:var(--text-muted)"></i>
+                    </div>
+                    <div class="table-container" style="margin-bottom:0;">
+                        <table id="dashboard-expiry-table">
+                            <thead>
+                                <tr>
+                                    <th>Ingredient</th>
+                                    <th>Quantity</th>
+                                    <th>Expiry Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Quick Tips Cardamoms -->
+                <div class="glass-card">
+                    <div class="form-title">Culinary Insights</div>
+                    <div style="display:flex; flex-direction:column; gap:1.25rem; font-size:0.95rem; line-height:1.5;">
+                        <div style="display:flex; gap:0.75rem; align-items:flex-start">
+                            <i data-lucide="sparkles" style="color:var(--primary); shrink:0; margin-top:2px;"></i>
+                            <p><strong style="color:#fff">Receipt Scanner</strong>: Just snapped a bill receipt? Drag it into the scanner tab. Saffron will extract items instantly with 100% accuracy.</p>
+                        </div>
+                        <div style="display:flex; gap:0.75rem; align-items:flex-start">
+                            <i data-lucide="flame" style="color:var(--primary); shrink:0; margin-top:2px;"></i>
+                            <p><strong style="color:#fff">Zero-Waste Cooking</strong>: Pay attention to the amber warnings! Use expiring items immediately by cooking corresponding suggested recipes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- TAB: PANTRY INVENTORY -->
+        <!-- ------------------------------------------------------------- -->
+        <section class="tab-content" id="tab-pantry">
+            <div class="two-col-layout">
+                <!-- Left side: Table and Filters -->
+                <div class="glass-card">
+                    <div class="pantry-header-row">
+                        <div class="search-box">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="inventory-search" placeholder="Search ingredients (e.g. Tomato, Chili)...">
+                        </div>
+                        <div class="pantry-filters">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="expiring">Expiring (3d)</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="pantry-table">
+                            <thead>
+                                <tr>
+                                    <th>Ingredient Name</th>
+                                    <th>Current Stock</th>
+                                    <th>Expiry Date</th>
+                                    <th style="width: 80px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right side: Add Item Form -->
+                <div class="glass-card">
+                    <h2 class="form-title">Add Pantry Stock</h2>
+                    <form id="add-item-form">
+                        <div class="form-group">
+                            <label for="add-name">Ingredient Name</label>
+                            <input type="text" id="add-name" class="form-control" placeholder="e.g. Kashmiri Chili, Paneer" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-qty">Quantity</label>
+                            <input type="number" id="add-qty" class="form-control" step="any" placeholder="e.g. 2.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-expiry">Expiry Date (Optional)</label>
+                            <input type="date" id="add-expiry" class="form-control">
+                            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:0.25rem;">
+                                If omitted, Saffron auto-calculates typical shelf life.
+                            </span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="plus-circle"></i>
+                            Add Stock Item
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- TAB: GEMINI SCANNER -->
+        <!-- ------------------------------------------------------------- -->
+        <section class="tab-content" id="tab-scanner">
+            <div class="two-col-layout">
+                <!-- Left Section: Upload Card -->
+                <div>
+                    <div class="glass-card upload-card" id="drop-zone">
+                        <div class="upload-icon">
+                            <i data-lucide="receipt" style="width:32px; height:32px;"></i>
+                        </div>
+                        <h3>Upload Bill Receipt</h3>
+                        <p>Drag and drop your receipt image here, or click to browse files from your computer</p>
+                        <input type="file" id="file-input" class="upload-hidden" accept="image/*">
+                        <button class="btn btn-secondary" style="width:auto; padding: 0.6rem 1.5rem" onclick="document.getElementById('file-input').click()">
+                            Browse Image
+                        </button>
+                    </div>
+
+                    <!-- Loader during API scanning -->
+                    <div class="glass-card scan-loader" id="scan-loader">
+                        <div class="spinner"></div>
+                        <div style="text-align: center;">
+                            <h3 class="pulse-text">Analyzing Receipt...</h3>
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem">
+                                Extracting line items, weights, and ingredient quantities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Analysis Review Table -->
+                <div class="glass-card review-panel" id="review-panel">
+                    <h2 class="form-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Verify Parsed Ingredients</span>
+                        <span class="api-badge" style="background:rgba(255, 128, 8, 0.1); color:var(--primary); font-weight:600">
+                            Smart OCR Active
+                        </span>
+                    </h2>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem">
+                        Confirm or edit quantities before adding ingredients to Saffron's pantry inventory.
+                    </p>
+
+                    <div class="table-container">
+                        <table id="parsed-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Ingredient</th>
+                                    <th style="width: 120px;">Qty</th>
+                                    <th style="width: 60px; text-align: center;">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated dynamically after scan -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="display:flex; gap:1rem;">
+                        <button class="btn btn-secondary" id="cancel-scan-btn">Discard</button>
+                        <button class="btn btn-primary" id="approve-scan-btn" style="flex-grow:1">
+                            <i data-lucide="check-circle-2"></i>
+                            Approve & Add items
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- TAB: RECIPE MENTOR -->
+        <!-- ------------------------------------------------------------- -->
+        <section class="tab-content" id="tab-recipes">
+            <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); padding: 1.25rem 1.5rem; border-radius: 16px; flex-wrap: wrap; gap: 1.5rem;">
+                <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
+                    <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                        <label for="recipe-servings" style="font-size:0.85rem; color:var(--text-muted); font-weight:600">DINERS / PEOPLE</label>
+                        <div style="display:flex; align-items:center; gap:0.5rem">
+                            <i data-lucide="users" style="color:var(--primary); width:18px"></i>
+                            <input type="number" id="recipe-servings" value="2" min="1" class="form-control" style="width: 120px; font-weight:700; text-align:center;">
+                        </div>
+                    </div>
+                    <div style="color: var(--text-muted); font-size:0.9rem; max-width: 420px;">
+                        Select an Indian kitchen recipe below. Saffron will scale the ingredients and verify your pantry stock in real-time.
+                    </div>
+                </div>
+                
+                <!-- Recommendation Mode Selector -->
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                    <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600; text-transform: uppercase; letter-spacing: 0.5px;">Recommendation Mode</span>
+                    <div style="display: flex; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 20px; border: 1px solid var(--border-glass);">
+                        <button id="mode-standard-btn" class="toggle-btn active" style="border: none; outline: none; background: var(--primary-gradient); color: #fff; padding: 6px 16px; border-radius: 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i data-lucide="book-open" style="width:14px; height:14px;"></i> Standard Recipes
+                        </button>
+                        <button id="mode-dynamic-btn" class="toggle-btn" style="border: none; outline: none; background: transparent; color: var(--text-muted); padding: 6px 16px; border-radius: 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <i data-lucide="sparkles" style="width:14px; height:14px;"></i> Dynamic AI Suggestion
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col-layout">
+                <!-- Recipes Grid Selection -->
+                <div class="recipes-grid" id="recipes-grid">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Recipe Inventory Status Comparison -->
+                <div class="glass-card" id="recipe-details-card" style="display: none;">
+                    <h2 class="form-title" id="selected-recipe-title">Recipe Ingredients</h2>
+                    
+                    <div class="ingredient-status-list" id="recipe-ingredient-list">
+                        <!-- Loaded dynamically based on chosen recipe -->
+                    </div>
+
+                    <button class="btn btn-primary" id="cook-recipe-btn">
+                        <i data-lucide="cooking-pot"></i>
+                        Cook Recipe & Deduct Stock
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ------------------------------------------------------------- -->
+    <!-- JAVASCRIPT LOGIC -->
+    <!-- ------------------------------------------------------------- -->
+    <script>
+        // API Base URL
+        const API_URL = ""; 
+
+        // State variables
+        let currentPantry = [];
+        let parsedScanItems = [];
+        let recipesList = [];
+        let selectedRecipe = null;
+
+        // Document elements
+        const navItems = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const pageTitle = document.getElementById('page-title');
+        const pageSubtitle = document.getElementById('page-subtitle');
+        const toastContainer = document.getElementById('toast-container');
+
+        // Navigation controls
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetTab = item.getAttribute('data-tab');
+                
+                navItems.forEach(n => n.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                item.classList.add('active');
+                document.getElementById(`tab-${targetTab}`).classList.add('active');
+                
+                // Update headers dynamically
+                updateTabHeaders(targetTab);
+                
+                // Trigger action/reload on tabs
+                if (targetTab === 'pantry') {
+                    fetchInventory();
+                } else if (targetTab === 'dashboard') {
+                    fetchDashboardData();
+                } else if (targetTab === 'recipes') {
+                    loadRecipes();
+                }
+            });
+        });
+
+        function updateTabHeaders(tab) {
+            if (tab === 'dashboard') {
+                pageTitle.textContent = "Welcome back, Chef";
+                pageSubtitle.textContent = "Here is the visual overview of your Indian kitchen pantry stock.";
+            } else if (tab === 'pantry') {
+                pageTitle.textContent = "Pantry Inventory Manager";
+                pageSubtitle.textContent = "Monitor, search, and manually update pantry ingredient stocks.";
+            } else if (tab === 'scanner') {
+                pageTitle.textContent = "Smart Receipt Scanner";
+                pageSubtitle.textContent = "Upload a receipt image and let our AI automatically parse and import bill items.";
+            } else if (tab === 'recipes') {
+                pageTitle.textContent = "Recipe Mentor & Planner";
+                pageSubtitle.textContent = "Scale delicious traditional Indian recipes and cook with automatic stock deduction.";
+            }
+        }
+
+        // Toasts Helper
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let iconName = 'check-circle';
+            if (type === 'error') iconName = 'alert-triangle';
+            if (type === 'warning') iconName = 'info';
+
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">
+                    <i data-lucide="${iconName}"></i>
+                </div>
+                <div>${message}</div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            lucide.createIcons();
+            
+            // Slide out and remove after 4 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s forwards reverse';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3700);
+        }
+
+        // -------------------------------------------------------------
+        // PERSISTENCE & API LOGIC
+        // -------------------------------------------------------------
+
+        // Fetch Inventory
+        async function fetchInventory() {
+            try {
+                const res = await fetch(`${API_URL}/api/inventory`);
+                const data = await res.json();
+                currentPantry = data;
+                
+                // Update badges
+                document.getElementById('pantry-total-count').querySelector('span').textContent = `${data.length} batches`;
+                
+                renderPantryTable(data);
+                return data;
+            } catch (err) {
+                showToast("Failed to fetch inventory from server.", "error");
+                console.error(err);
+            }
+        }
+
+        // Render Inventory Table
+        function renderPantryTable(items) {
+            const tbody = document.querySelector('#pantry-table tbody');
+            tbody.innerHTML = '';
+            
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2rem;">No ingredients found in the pantry. Add items manually or upload a receipt to get started!</td></tr>`;
+                return;
+            }
+
+            const today = new Date();
+            const cutoffDate = new Date();
+            cutoffDate.setDate(today.getDate() + 3);
+
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                // Expiry configuration
+                let expiryText = "No Expiry";
+                let badgeClass = "expiry-badge";
+                
+                if (item.expiry) {
+                    const exp = new Date(item.expiry);
+                    expiryText = item.expiry;
+                    if (exp < today) {
+                        badgeClass += " expired";
+                        expiryText = `Expired (${item.expiry})`;
+                    } else if (exp <= cutoffDate) {
+                        badgeClass += " expiring-soon";
+                        expiryText = `Expiring (${item.expiry})`;
+                    }
+                }
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="item-name-cell">
+                            <i data-lucide="carrot" style="width:16px; color:var(--primary)"></i>
+                            <span>${item.name}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="qty-badge">${item.qty}</span> <span style="font-size:0.85rem; color:var(--text-muted)">${item.unit}</span>
+                    </td>
+                    <td>
+                        <span class="${badgeClass}">${expiryText}</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="action-icon-btn" onclick="deleteBatch('${item.name}', '${item.expiry || 'None'}')">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // Delete Stock Batch
+        async function deleteBatch(name, expiry) {
+            if (!confirm(`Are you sure you want to remove this batch of ${name}?`)) return;
+            try {
+                const res = await fetch(`${API_URL}/api/inventory/${encodeURIComponent(name)}/${encodeURIComponent(expiry)}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    fetchInventory();
+                } else {
+                    showToast("Error deleting item.", "error");
+                }
+            } catch (err) {
+                showToast("Failed to delete stock.", "error");
+                console.error(err);
+            }
+        }
+
+        // Search & Filtering
+        const searchInput = document.getElementById('inventory-search');
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            const filtered = currentPantry.filter(item => item.name.toLowerCase().includes(query));
+            renderPantryTable(filtered);
+        });
+
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.getAttribute('data-filter');
+                if (filter === 'all') {
+                    renderPantryTable(currentPantry);
+                } else if (filter === 'expiring') {
+                    const today = new Date();
+                    const cutoff = new Date();
+                    cutoff.setDate(today.getDate() + 3);
+                    
+                    const filtered = currentPantry.filter(item => {
+                        if (!item.expiry) return false;
+                        const exp = new Date(item.expiry);
+                        return exp <= cutoff;
+                    });
+                    renderPantryTable(filtered);
+                }
+            });
+        });
+
+        // Add Item Form
+        const addItemForm = document.getElementById('add-item-form');
+        addItemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('add-name').value.trim();
+            const qty = parseFloat(document.getElementById('add-qty').value);
+            const expiry = document.getElementById('add-expiry').value || null;
+
+            if (!name || isNaN(qty)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/api/inventory`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, qty, expiry })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    addItemForm.reset();
+                    fetchInventory();
+                } else {
+                    showToast("Failed to add stock.", "error");
+                }
+            } catch (err) {
+                showToast("Error connecting to server.", "error");
+                console.error(err);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // DASHBOARD PANEL LOGIC
+        // -------------------------------------------------------------
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch(`${API_URL}/api/inventory`);
+                const inventoryData = await res.json();
+                
+                // Set total batches
+                document.getElementById('stat-total-batches').textContent = inventoryData.length;
+                
+                // Filter expiring in 3 days
+                const today = new Date();
+                const cutoff = new Date();
+                cutoff.setDate(today.getDate() + 3);
+                
+                const expiringSoonItems = inventoryData.filter(item => {
+                    if (!item.expiry) return false;
+                    const exp = new Date(item.expiry);
+                    return exp <= cutoff;
+                });
+                
+                document.getElementById('stat-expiring-soon').textContent = expiringSoonItems.length;
+
+                // Populate dashboard table
+                const tbody = document.querySelector('#dashboard-expiry-table tbody');
+                tbody.innerHTML = '';
+                
+                if (expiringSoonItems.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">All items are fresh! No soon expiring items detected.</td></tr>`;
+                } else {
+                    expiringSoonItems.forEach(item => {
+                        const tr = document.createElement('tr');
+                        const exp = new Date(item.expiry);
+                        let badgeClass = "expiry-badge";
+                        let statusText = item.expiry;
+                        
+                        if (exp < today) {
+                            badgeClass += " expired";
+                            statusText = `Expired (${item.expiry})`;
+                        } else {
+                            badgeClass += " expiring-soon";
+                            statusText = `Expires (${item.expiry})`;
+                        }
+
+                        tr.innerHTML = `
+                            <td><strong style="text-transform:capitalize; color:#fff">${item.name}</strong></td>
+                            <td>${item.qty} ${item.unit}</td>
+                            <td><span class="${badgeClass}">${statusText}</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                // Check recipes ready status
+                await checkRecipesReadyStatus();
+            } catch (err) {
+                console.error("Dashboard loaded with errors", err);
+            }
+        }
+
+        async function checkRecipesReadyStatus() {
+            try {
+                const res = await fetch(`${API_URL}/api/recipes`);
+                const recipes = await res.json();
+                
+                let readyCount = 0;
+                for (let r of recipes) {
+                    const checkRes = await fetch(`${API_URL}/api/recipes/check`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ recipe_name: r.name, people: 2 })
+                    });
+                    const checkData = await checkRes.json();
+                    if (checkData.can_make) {
+                        readyCount++;
+                    }
+                }
+                
+                document.getElementById('stat-recipes-ready').textContent = `${readyCount} / ${recipes.length}`;
+            } catch (err) {
+                console.error("Could not fetch recipe status", err);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // AI RECEIPT SCANNER LOGIC
+        // -------------------------------------------------------------
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const scanLoader = document.getElementById('scan-loader');
+        const reviewPanel = document.getElementById('review-panel');
+
+        // Drag & Drop events
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) handleReceiptUpload(files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) handleReceiptUpload(fileInput.files[0]);
+        });
+
+        async function handleReceiptUpload(file) {
+            dropZone.style.display = 'none';
+            scanLoader.classList.add('active');
+            reviewPanel.classList.remove('active');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                showToast("Receipt uploaded. Starting AI analysis...", "warning");
+                const res = await fetch(`${API_URL}/api/inventory/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                scanLoader.classList.remove('active');
+                
+                if (data.success && data.items && data.items.length) {
+                    parsedScanItems = data.items;
+                    renderParsedReviewTable(data.items);
+                    reviewPanel.classList.add('active');
+                    showToast("Scan finished! Please verify items.", "success");
+                } else {
+                    showToast("No ingredients could be parsed from receipt. Please try another image.", "error");
+                    dropZone.style.display = 'flex';
+                }
+            } catch (err) {
+                scanLoader.classList.remove('active');
+                dropZone.style.display = 'flex';
+                showToast("Scan call failed. Check your API configuration in Saffron's .env file.", "error");
+                console.error(err);
+            }
+        }
+
+        function renderParsedReviewTable(items) {
+            const tbody = document.querySelector('#parsed-items-table tbody');
+            tbody.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <input type="text" value="${item.name}" class="form-control" style="padding:0.4rem; font-weight:600; text-transform:capitalize;" onchange="updateParsedItem(${index}, 'name', this.value)">
+                    </td>
+                    <td>
+                        <input type="number" step="any" value="${item.qty}" class="form-control" style="padding:0.4rem;" onchange="updateParsedItem(${index}, 'qty', this.value)">
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="action-icon-btn" onclick="deleteParsedRow(${index})">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        window.updateParsedItem = function(index, key, val) {
+            if (key === 'qty') {
+                parsedScanItems[index][key] = parseFloat(val) || 0;
+            } else {
+                parsedScanItems[index][key] = val;
+            }
+        };
+
+        window.deleteParsedRow = function(index) {
+            parsedScanItems.splice(index, 1);
+            renderParsedReviewTable(parsedScanItems);
+            if (parsedScanItems.length === 0) {
+                reviewPanel.classList.remove('active');
+                dropZone.style.display = 'flex';
+            }
+        };
+
+        document.getElementById('cancel-scan-btn').addEventListener('click', () => {
+            parsedScanItems = [];
+            reviewPanel.classList.remove('active');
+            dropZone.style.display = 'flex';
+            showToast("Scan discarded.", "warning");
+        });
+
+        document.getElementById('approve-scan-btn').addEventListener('click', async () => {
+            try {
+                showToast("Adding ingredients to inventory...", "warning");
+                const res = await fetch(`${API_URL}/api/inventory/bulk-add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(parsedScanItems)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    reviewPanel.classList.remove('active');
+                    dropZone.style.display = 'flex';
+                    parsedScanItems = [];
+                    
+                    // Redirect back to pantry inventory tab
+                    document.getElementById('nav-pantry-tab').click();
+                } else {
+                    showToast("Error adding items.", "error");
+                }
+            } catch (err) {
+                showToast("Bulk save failed.", "error");
+                console.error(err);
+            }
+        });
+
+        // -------------------------------------------------------------
+        // RECIPE MENTOR LOGIC
+        // -------------------------------------------------------------
+        const servingsInput = document.getElementById('recipe-servings');
+        servingsInput.addEventListener('change', () => {
+            loadRecipes();
+            if (selectedRecipe) {
+                checkRecipeIngredients(selectedRecipe);
+            }
+        });
+
+        // Recommendation Mode State and Click Listeners
+        let recipeMode = 'standard';
+        const standardBtn = document.getElementById('mode-standard-btn');
+        const dynamicBtn = document.getElementById('mode-dynamic-btn');
+
+        standardBtn.addEventListener('click', () => {
+            recipeMode = 'standard';
+            standardBtn.style.background = 'var(--primary-gradient)';
+            standardBtn.style.color = '#fff';
+            dynamicBtn.style.background = 'transparent';
+            dynamicBtn.style.color = 'var(--text-muted)';
+            
+            selectedRecipe = '';
+            document.getElementById('recipe-details-card').style.display = 'none';
+            loadRecipes();
+        });
+
+        dynamicBtn.addEventListener('click', () => {
+            recipeMode = 'dynamic';
+            dynamicBtn.style.background = 'var(--primary-gradient)';
+            dynamicBtn.style.color = '#fff';
+            standardBtn.style.background = 'transparent';
+            standardBtn.style.color = 'var(--text-muted)';
+            
+            selectedRecipe = '';
+            document.getElementById('recipe-details-card').style.display = 'none';
+            loadRecipes();
+        });
+
+        async function loadRecipes() {
+            try {
+                const people = parseInt(servingsInput.value) || 2;
+                const endpoint = recipeMode === 'dynamic' ? '/api/recipes/recommendations' : '/api/recipes';
+                const res = await fetch(`${API_URL}${endpoint}?people=${people}`);
+                const recipes = await res.json();
+                recipesList = recipes;
+
+                const grid = document.getElementById('recipes-grid');
+                grid.innerHTML = '';
+
+                recipes.forEach((recipe, idx) => {
+                    const card = document.createElement('div');
+                    card.className = `recipe-card glass-card ${selectedRecipe === recipe.name ? 'active' : ''}`;
+                    
+                    let badgesHtml = '';
+                    if (recipe.can_make) {
+                        badgesHtml += `
+                            <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.6rem; border-radius:12px; background:rgba(16, 185, 129, 0.15); color:var(--secondary); border:1px solid rgba(16, 185, 129, 0.25); display:inline-flex; align-items:center; gap:0.25rem;">
+                                <i data-lucide="check-circle" style="width:12px; height:12px;"></i> Ready to Cook
+                            </span>
+                        `;
+                    } else {
+                        badgesHtml += `
+                            <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.6rem; border-radius:12px; background:rgba(255, 255, 255, 0.05); color:var(--text-muted); border:1px solid var(--border-glass); display:inline-flex; align-items:center; gap:0.25rem;">
+                                <i data-lucide="package" style="width:12px; height:12px;"></i> ${recipe.match_score}% Match
+                            </span>
+                        `;
+                    }
+                    
+                    if (recipe.expiring_ingredients && recipe.expiring_ingredients.length > 0) {
+                        badgesHtml += `
+                            <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.6rem; border-radius:12px; background:rgba(245, 158, 11, 0.15); color:var(--warning); border:1px solid rgba(245, 158, 11, 0.25); display:inline-flex; align-items:center; gap:0.25rem;" title="Uses expiring soon: ${recipe.expiring_ingredients.join(', ')}">
+                                <i data-lucide="flame" style="width:12px; height:12px;"></i> Zero-Waste
+                            </span>
+                        `;
+                    }
+
+                    if (recipeMode === 'dynamic' && recipe.category) {
+                        const iconMap = {
+                            "Beverage": "🍹",
+                            "Salad": "🥗",
+                            "Curry": "🍛",
+                            "Soup": "🥣",
+                            "Snack": "🍿",
+                            "Other": "🍽️"
+                        };
+                        const categoryLabel = iconMap[recipe.category] || "🍽️";
+                        badgesHtml += `
+                            <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.6rem; border-radius:12px; background:rgba(255, 255, 255, 0.05); color:var(--text-muted); border:1px solid var(--border-glass); display:inline-flex; align-items:center; gap:0.25rem;">
+                                ${categoryLabel} ${recipe.category}
+                            </span>
+                        `;
+                    }
+
+                    let reasonHtml = '';
+                    if (recipeMode === 'dynamic' && recipe.recommendation_reason) {
+                        reasonHtml = `
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin: 0.6rem 0 0 0; font-style:italic; line-height:1.3;">
+                                💡 ${recipe.recommendation_reason}
+                            </p>
+                        `;
+                    }
+
+                    const timeLabel = recipe.time_mins ? `${recipe.time_mins} mins` : '30 mins';
+
+                    card.innerHTML = `
+                        <h3>${recipe.name}</h3>
+                        <div class="recipe-meta" style="margin-top:0.25rem;">
+                            <span><i data-lucide="clock" style="width:14px"></i> ${timeLabel}</span>
+                            <span><i data-lucide="users" style="width:14px"></i> Serves ${recipe.serves}</span>
+                        </div>
+                        <div class="recipe-badges" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem;">
+                            ${badgesHtml}
+                        </div>
+                        ${reasonHtml}
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.recipe-card').forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        selectedRecipe = recipe.name;
+                        checkRecipeIngredients(recipe.name);
+                    });
+                    grid.appendChild(card);
+                });
+                lucide.createIcons();
+            } catch (err) {
+                showToast("Failed to load recipes.", "error");
+                console.error(err);
+            }
+        }
+
+        async function checkRecipeIngredients(recipeName) {
+            const people = parseInt(servingsInput.value) || 2;
+            try {
+                const res = await fetch(`${API_URL}/api/recipes/check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipe_name: recipeName, people: people })
+                });
+                
+                const data = await res.json();
+                
+                // Show details card
+                const detailsCard = document.getElementById('recipe-details-card');
+                detailsCard.style.display = 'block';
+                document.getElementById('selected-recipe-title').textContent = `${data.recipe_name} (${data.people} People)`;
+                
+                const list = document.getElementById('recipe-ingredient-list');
+                list.innerHTML = '';
+
+                data.ingredients.forEach(ing => {
+                    const row = document.createElement('div');
+                    row.className = 'ing-row';
+                    
+                    const isEnough = ing.is_enough;
+                    const progressPercentage = Math.min(100, (ing.available / ing.required) * 100);
+                    
+                    let progressColorStyle = '';
+                    if (!isEnough) {
+                        progressColorStyle = 'background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);';
+                    } else if (ing.is_expiring_soon) {
+                        progressColorStyle = 'background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);';
+                    } else {
+                        progressColorStyle = 'background: var(--secondary-gradient);';
+                    }
+
+                    let statusText = isEnough ? '✓ Available' : '⚠ Missing';
+                    let statusColorClass = isEnough ? 'enough' : 'missing';
+                    if (isEnough && ing.is_expiring_soon) {
+                        statusText = '🔥 Expiring Soon';
+                        statusColorClass = 'warning';
+                    }
+
+                    row.innerHTML = `
+                        <div class="ing-label">
+                            <span class="ing-name">${ing.name}</span>
+                            <span class="ing-stock ${statusColorClass}">
+                                ${statusText} (${ing.available} / ${ing.required} ${ing.unit})
+                            </span>
+                        </div>
+                        <div class="ing-progress-bg">
+                            <div class="ing-progress-bar" style="width: ${progressPercentage}%; ${progressColorStyle}"></div>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+
+                // Configure Cooking Button
+                const cookBtn = document.getElementById('cook-recipe-btn');
+                if (data.can_make) {
+                    cookBtn.disabled = false;
+                    cookBtn.style.opacity = '1';
+                    cookBtn.style.cursor = 'pointer';
+                    cookBtn.innerHTML = `<i data-lucide="cooking-pot"></i> Cook Recipe & Deduct Stock`;
+                    lucide.createIcons();
+                } else {
+                    cookBtn.disabled = true;
+                    cookBtn.style.opacity = '0.5';
+                    cookBtn.style.cursor = 'not-allowed';
+                    cookBtn.innerHTML = `<i data-lucide="x-circle"></i> Missing Ingredients to Cook`;
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Cook Button Click
+        document.getElementById('cook-recipe-btn').addEventListener('click', async () => {
+            if (!selectedRecipe) return;
+            const people = parseInt(servingsInput.value) || 2;
+            
+            try {
+                const res = await fetch(`${API_URL}/api/recipes/cook`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipe_name: selectedRecipe, people: people })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    // Refresh ingredient check
+                    checkRecipeIngredients(selectedRecipe);
+                } else {
+                    showToast("Error cooking recipe.", "error");
+                }
+            } catch (err) {
+                showToast("Failed to process cooking request.", "error");
+                console.error(err);
+            }
+        });
+
+        // Initialize App
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            fetchDashboardData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "tomato",
+    "expiry": "2026-05-23",
+    "qty": 2,
+    "unit": "kg",
+    "price": 0
+  },
+  {
+    "name": "onion",
+    "expiry": "2026-05-23",
+    "qty": 1,
+    "unit": "kg",
+    "price": 0
+  },
+  {
+    "name": "garlic",
+    "expiry": "2026-06-19",
+    "qty": 100,
+    "unit": "grams",
+    "price": 0
+  },
+  {
+    "name": "green chili",
+    "expiry": "2026-05-27",
+    "qty": 50,
+    "unit": "grams",
+    "price": 0
+  },
+  {
+    "name": "salt",
+    "expiry": "2028-05-20",
+    "qty": 1,
+    "unit": "kg",
+    "price": 0
+  }
+]
